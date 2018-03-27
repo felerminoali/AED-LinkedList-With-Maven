@@ -41,7 +41,7 @@ public class LinkList implements Operacoes {
 
     
     
-    
+   
     @Override
     public void adiciona(int elemento) {
         Link nova = new Link(elemento);
