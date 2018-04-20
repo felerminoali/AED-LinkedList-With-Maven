@@ -15,11 +15,16 @@ public class DoublyLinked implements Operacoes {
 
     private Link primeira;
     private Link ultima;
-    private int totalDeElementos;
+    private int totalDeElementos = 0;
 
     public void DoublyLinked() {
         primeira = null;
         ultima = null;
+    }
+    
+    public void DoublyLinked(Link primeira, Link ultima) {
+        this.primeira = primeira;
+        this.ultima = ultima;
     }
 
     public boolean isEmpty() {
@@ -71,16 +76,18 @@ public class DoublyLinked implements Operacoes {
     public void adicionaDoFim(int elemento) {
 
         Link nova = new Link(elemento);
-
         nova.anterior = ultima;
-        ultima = nova;
         ultima.proxima = nova;
-
+        ultima = nova;
         totalDeElementos++;
     }
 
     @Override
     public void adiciona(int posicao, int elemento) {
+
+        if (!this.posicaoOcupada(posicao)) {
+            throw new IllegalArgumentException("Posição não existe");
+        }
 
         if (posicao == 0) {
             adicionaNoComeco(elemento);
@@ -104,18 +111,20 @@ public class DoublyLinked implements Operacoes {
         return this.pegaLink(posicao).dData;
     }
 
-    public void removeDoComeco() {
+    public Link removeDoComeco() {
 
-        if (!this.posicaoOcupada(0)) {
-            throw new IllegalArgumentException("Posição não existe");
-        }
-
+//        if (!this.posicaoOcupada(0)) {
+//            throw new IllegalArgumentException("Posição não existe");
+//        }
+        Link temp = primeira;
         primeira = primeira.proxima;
         totalDeElementos--;
 
         if (totalDeElementos == 0) {
             ultima = null;
         }
+
+        return temp;
     }
 
     public void removeDoFim() {
@@ -127,7 +136,7 @@ public class DoublyLinked implements Operacoes {
         if (totalDeElementos == 1) {
             removeDoComeco();
         } else {
-            Link penultima = ultima.anterior; 
+            Link penultima = ultima.anterior;
             penultima.proxima = null;
             totalDeElementos--;
         }
@@ -135,21 +144,20 @@ public class DoublyLinked implements Operacoes {
 
     @Override
     public void remove(int posicao) {
-        
-        if(posicao == 0){
+
+        if (posicao == 0) {
             removeDoComeco();
-        }else if(posicao == totalDeElementos -1){
+        } else if (posicao == totalDeElementos - 1) {
             removeDoFim();
-        }else{
-            Link anterior = pegaLink(posicao-1);
+        } else {
+            Link anterior = pegaLink(posicao - 1);
             Link proximo = pegaLink(posicao).proxima;
-            
+
             proximo.anterior = anterior;
             anterior.proxima = proximo;
-            
+
             totalDeElementos--;
-            
-            
+
         }
 
     }
@@ -174,6 +182,47 @@ public class DoublyLinked implements Operacoes {
         return this.totalDeElementos;
     }
 
+    public void removerDuplicado() {
+
+        Link actual = primeira;
+        while (actual != null) {
+
+            Link actualP = actual;
+            Link posterior = actual.proxima;
+
+            while (actualP.dData == posterior.dData) {
+                actual = posterior;
+                posterior = actual.proxima;
+                totalDeElementos--;
+                if (posterior == null) {
+                    break;
+                }
+
+            }
+            actualP.proxima = posterior;
+
+            if (posterior != null) {
+                posterior.anterior = actualP;
+            }
+            actual = posterior;
+        }
+    }
+
+    public void reverso() {
+        DoublyLinked rev = new DoublyLinked();
+        Link first = this.removeDoComeco();
+        while (first != null) {
+            rev.adicionaNoComeco(first.dData);
+            if (this.isEmpty()) {
+                break;
+            }
+            first = this.removeDoComeco();
+        }
+        this.totalDeElementos = rev.totalDeElementos;
+        this.primeira = rev.primeira;
+        this.ultima = rev.ultima;
+    }
+
     @Override
     public String toString() {
         // Verificando se a Lista está vazia
@@ -194,4 +243,25 @@ public class DoublyLinked implements Operacoes {
         return builder.toString();
     }
 
+    public static void main(String[] args) {
+
+        DoublyLinked list = new DoublyLinked();
+
+        list.adiciona(2);
+        list.adiciona(2);
+
+        list.adiciona(3);
+        list.adiciona(3);
+
+        list.adiciona(4);
+        list.adiciona(4);
+
+        System.out.println(list);
+
+        list.removerDuplicado();
+        System.out.println(list);
+
+        list.reverso();
+        System.out.println(list);
+    }
 }

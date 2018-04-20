@@ -20,6 +20,11 @@ public class Link {
         this.dData = dData;
     }
     
+    public Link(int dData, Link proxima) {
+        this.dData = dData;
+        this.proxima = proxima;
+    }
+    
     @Override
     public String toString(){
         return "{" + dData + "} ";
